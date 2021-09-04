@@ -9,13 +9,13 @@ To support backend Functionality of KnowledgeBase application
 2. Provide Environement details:
    _Either you can create .env file at root directory or you can mention in System Environments_
 
-   ANGULAR_APP =<Proide Angular app URL/Client URL>
-   DB_STRING=<MongoDB Connection String>
-   PORT=<Custome Port Number, if not provided then app run on 3000 by default>
-   CLIENT_ID=<Google Api client ID>
-   USER_KEY=<AWS S3 Access key>
-   USER_SECRET=<AWS S3 Access Secret Key>
-   BUCKET_NAME=<Aws S3 Bucket name>
+   ANGULAR_APP=Proide Angular app URL/Client URL ;
+   DB_STRING=MongoDB Connection String ;
+   PORT=Custome Port Number, if not provided then app run on 3000 by default ;
+   CLIENT_ID=Google Api client ID ;
+   USER_KEY=AWS S3 Access key ;
+   USER_SECRET=AWS S3 Access Secret Key ;
+   BUCKET_NAME=Aws S3 Bucket name ;
 
 3. Provide your Secret key details in key.txt file.
 4. Run command : npm install
