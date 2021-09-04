@@ -112,4 +112,18 @@ router.post(
   fileService.uploadFile
 );
 
+router.post("/createfile/:category", addContentToFile, fileService.uploadFile);
+
+function addContentToFile(req, res, next) {
+  if (!req.body.filename || !req.body.filetext) {
+    return res
+      .status(400)
+      .json({ success: false, msg: "Please provide Proper Input" });
+  }
+  req.file = {};
+  req.file.originalname = req.body.filename;
+  req.file.buffer = Buffer.from(req.body.filetext);
+  next();
+}
+
 module.exports = router;
