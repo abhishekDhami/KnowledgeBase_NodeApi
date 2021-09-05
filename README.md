@@ -16,7 +16,7 @@ To support backend Functionality of KnowledgeBase application
    USER_KEY=AWS S3 Access key ;
    USER_SECRET=AWS S3 Access Secret Key ;
    BUCKET_NAME=Aws S3 Bucket name ;
-   NUMBER_OF_INSTANCES=Number of Node App Instances ;
+   NUMBER_OF_INSTANCES=Number of Node App Instances (default 2);
 
 3. Provide your Secret key details in key.txt file.
 4. Run command : npm install
