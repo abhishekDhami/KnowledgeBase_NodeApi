@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const cluster = require("cluster");
 
 //To get access to local .env file's variable
 require("dotenv").config();
@@ -8,6 +9,7 @@ require("dotenv").config();
 const app = express();
 
 const port = process.env.PORT || 3000;
+const instances = process.env.NUMBER_OF_INSTANCES || 2;
 
 //Allowing Angular app to access the Node apis
 app.use(
@@ -16,35 +18,56 @@ app.use(
   })
 );
 
-//Connecting to Database
-require("./configs/database");
+//Checking if current process is Master or not
+//If it is master then Fork process with number of instances
+//Else Start Configuration and Start server
+if (cluster.isMaster) {
+  //Creating number of instances
+  for (let i = 0; i < instances; i++) {
+    cluster.fork();
+  }
 
-//loading Models
-require("./model/user");
-require("./model/knowledgeContent");
+  //If process got exited then create new Instance
+  //It will run number of node application instances at anytime (fail safe)
+  cluster.on("exit", (worker, code, signal) => {
+    console.log(
+      `Worker:${worker.process.pid} got exited . New Instance will be created`
+    );
+    cluster.fork();
+  });
+} else {
+  //Application Configuration------------------------------
 
-//Initializing Passport
-const passport = require("./helpers/passport");
-app.use(passport.initialize());
+  //Connecting to Database
+  require("./configs/database");
 
-//paring json data to body
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+  //loading Models
+  require("./model/user");
+  require("./model/knowledgeContent");
 
-//Using Central Router
-app.use("/", require("./routers"));
+  //Initializing Passport
+  const passport = require("./helpers/passport");
+  app.use(passport.initialize());
 
-//Handling Errors at application level
-app.use((err, req, res, next) => {
-  console.log(err);
-  res.status(500).send(err.message);
-});
-process.on("unhandledRejection", (error) => {
-  console.log(error);
-  process.exit(0);
-});
+  //paring json data to body
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
 
-//Starts to listen to requests
-app.listen(port, () => {
-  console.log(`Application is listening on ${port}`);
-});
+  //Using Central Router
+  app.use("/", require("./routers"));
+
+  //Handling Errors at application level
+  app.use((err, req, res, next) => {
+    console.log(err);
+    res.status(500).send(err.message);
+  });
+  process.on("unhandledRejection", (error) => {
+    console.log(error);
+    process.exit(0);
+  });
+
+  //Starts to listen to requests
+  app.listen(port, () => {
+    console.log(`Application is listening on ${port} ${process.pid}`);
+  });
+}
